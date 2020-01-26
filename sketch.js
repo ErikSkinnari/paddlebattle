@@ -3,10 +3,11 @@ let paddles = [];
 let canvasSize = 600;
 let canvasTopAlign = 100;
 let paddleSpeed = 10;
-let ballSpeed = 5;
+let ballSpeed = 6;
 let winningScore = 1000;
-let paddleWidth = 50;
+let paddleWidth = 45;
 let paddleHeight = 6;
+let runGame = false;
 
 let paddle1;
 let paddle2;
@@ -25,28 +26,17 @@ function setup() {
   let startVelY = (random(-1, 1) < 0 ? -ballSpeed : ballSpeed);
   ball = new Ball(width / 4, height / 2, 5, startVelX, startVelY);
 
-  paddle1 = new Paddle(canvasSize/2 - paddleWidth/2, canvasSize/2 - 10, paddleWidth, paddleHeight, 37, 39);
-  paddle2 = new Paddle(canvasSize/2 - paddleWidth/2, canvasSize/2 + 10, paddleWidth, paddleHeight, 65, 68);
+  paddle1 = new Paddle(canvasSize / 2 - paddleWidth / 2, canvasSize / 2 - 10, paddleWidth, paddleHeight, 37, 39);
+  paddle2 = new Paddle(canvasSize / 2 - paddleWidth / 2, canvasSize / 2 + 10, paddleWidth, paddleHeight, 65, 68);
 
   paddles.push(paddle1);
   paddles.push(paddle2);
 }
 
 function draw() {
+
   background(0);
   stroke(255);
-
-
-  ball.move();
-  ball.display();
-  if (ball.update() == false) {
-    gameOver();
-  }
-
-  for (let i = paddles.length - 1; i >= 0; i--) {
-    paddles[i].move();
-    paddles[i].display();
-  }
   textSize(20);
   fill(255);
 
@@ -55,12 +45,29 @@ function draw() {
   textAlign(RIGHT);
   text('Player 2: ' + p2Score, canvasSize - 20, 30);
 
-  if (p1Score >= winningScore || p2Score >= winningScore) {
-    gameOver();    
+  for (let i = paddles.length - 1; i >= 0; i--) {
+    paddles[i].move();
+    paddles[i].display();
+  }
+
+  if (runGame === true) {
+    ball.move();
+    ball.display();
+    if (ball.update() == false) {
+      gameOver();
+    }
+
+    if (p1Score >= winningScore || p2Score >= winningScore) {
+      gameOver();
+    }
   }
 }
 
 function setupGameBoard() {
+
+  background(0);
+  stroke(255);
+
   let canvas = createCanvas(canvasSize, canvasSize);
   canvas.position(windowWidth / 2 - canvasSize / 2, middleAlign);
 
@@ -73,12 +80,13 @@ function setupGameBoard() {
   // Insructions (left side of gameplay canvas)
   let howToPlay = createDiv(
     '<h4>How to play</h4>' +
-    '<p>This is a 2 player game. The goal is to keep the ball on your own half of the playing field. ' + 
-    'This is achieved by steering the paddle and try to prevent the ball from entering the other half of the playing field.<p>' + 
-    '<p>Winner is the first player to get ' + winningScore + ' points</p>' + 
-    '<br>Player 1 control keys:<br>Left & Right Arrow keys' + 
-    '<br><br>Player 2 control keys:<br>A & D keys'
-    );
+    '<p>This is a 2 player game. The goal is to keep the ball on your own half of the playing field. ' +
+    'This is achieved by steering the paddle and try to prevent the ball from entering the other half of the playing field.<p>' +
+    '<p>Winner is the first player to get ' + winningScore + ' points</p>' +
+    '<br>Player 1 control keys:<br>Left & Right Arrow keys' +
+    '<br><br>Player 2 control keys:<br>A & D keys' + 
+    '<br><h5>Press SPACE to start game</h5>'
+  );
   howToPlay.position(100, middleAlign);
   howToPlay.class('instructions');
 }
@@ -114,7 +122,7 @@ class Ball {
       this.velX *= -1;
     }
     // ceiling collition
-    if ((this.velY < 0 && this.y - this.r <= 0) || (this.velY > 0 && this.y + this.r >= height)){
+    if ((this.velY < 0 && this.y - this.r <= 0) || (this.velY > 0 && this.y + this.r >= height)) {
       this.velY *= -1;
     }
 
@@ -142,10 +150,10 @@ class Ball {
     }
 
     // Score updating. If ball on top half, give point to player 1, or if the ball is on the bottom half, give point to player 2.
-    if (this.y <= canvasSize/2) {
+    if (this.y <= canvasSize / 2) {
       p1Score += 1;
     }
-    else if (this.y > canvasSize/2) {
+    else if (this.y > canvasSize / 2) {
       p2Score += 1;
     }
     else {
@@ -173,6 +181,11 @@ function keyTyped() {
 function keyPressed() {
   if (keyCode === ENTER) {
     location.reload();
+  }
+  if (keyCode === 32) {
+    if (runGame === false) {
+      runGame = true;
+    }
   }
 }
 
