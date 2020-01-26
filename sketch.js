@@ -3,9 +3,9 @@ let paddles = [];
 let canvasSize = 600;
 let canvasTopAlign = 100;
 let paddleSpeed = 10;
-let ballSpeed = 6;
+let ballSpeed = 7;
 let winningScore = 1000;
-let paddleWidth = 45;
+let paddleWidth = 40;
 let paddleHeight = 6;
 let runGame = false;
 
@@ -13,9 +13,19 @@ let paddle1;
 let paddle2;
 let p1Score = 0;
 let p2Score = 0;
+let p1Name = "Player 1";
+let p2Name = "Player 2";
 
 let topAlign = 20;
 let middleAlign = 120;
+
+if (window.localStorage.p1Name !== null) {
+  p1Name = window.localStorage.p1Name;
+}
+
+if (window.localStorage.p2Name !== null) {
+  p2Name = window.localStorage.p2Name;
+}
 
 function setup() {
 
@@ -26,7 +36,7 @@ function setup() {
   let startVelY = (random(-1, 1) < 0 ? -ballSpeed : ballSpeed);
   ball = new Ball(width / 4, height / 2, 5, startVelX, startVelY);
 
-  paddle1 = new Paddle(canvasSize / 2 - paddleWidth / 2, canvasSize / 2 - 10, paddleWidth, paddleHeight, 37, 39);
+  paddle1 = new Paddle(canvasSize / 2 - paddleWidth / 2, canvasSize / 2 - 10, paddleWidth, paddleHeight, 74, 76);
   paddle2 = new Paddle(canvasSize / 2 - paddleWidth / 2, canvasSize / 2 + 10, paddleWidth, paddleHeight, 65, 68);
 
   paddles.push(paddle1);
@@ -41,9 +51,9 @@ function draw() {
   fill(255);
 
   textAlign(LEFT);
-  text('Player 1: ' + p1Score, 20, 30);
+  text(p1Name + ': ' + p1Score, 20, 30);
   textAlign(RIGHT);
-  text('Player 2: ' + p2Score, canvasSize - 20, 30);
+  text(p2Name + ' : ' + p2Score, canvasSize - 20, 30);
 
   for (let i = paddles.length - 1; i >= 0; i--) {
     paddles[i].move();
@@ -60,6 +70,11 @@ function draw() {
     if (p1Score >= winningScore || p2Score >= winningScore) {
       gameOver();
     }
+  } else {
+    fill(255, 0, 0);
+
+    textAlign(CENTER);
+    text('Press SPACE to start game', canvasSize/2, canvasSize/3);
   }
 }
 
@@ -83,16 +98,38 @@ function setupGameBoard() {
     '<p>This is a 2 player game. The goal is to keep the ball on your own half of the playing field. ' +
     'This is achieved by steering the paddle and try to prevent the ball from entering the other half of the playing field.<p>' +
     '<p>Winner is the first player to get ' + winningScore + ' points</p>' +
-    '<br>Player 1 control keys:<br>Left & Right Arrow keys' +
-    '<br><br>Player 2 control keys:<br>A & D keys' + 
+    '<br>Player 1 control keys:<br>J & L keys' +
+    '<br><br>Player 2 control keys:<br>A & D keys' +
     '<br><h5>Press SPACE to start game</h5>'
   );
   howToPlay.position(100, middleAlign);
   howToPlay.class('instructions');
+
+  // Player 1 name input
+  let p1 = createElement('h3', 'Player 1: ' + p1Name);
+  p1.position(windowWidth / 2 - canvasSize / 2, middleAlign + canvasSize + 5);
+
+  // Player 2 name input
+  let p2 = createElement('h3', 'Player 2: ' + p2Name);
+  p2.position(windowWidth / 2, middleAlign + canvasSize + 5);
+
+  let NameInput = createElement('form', '<br><input type="text" id="p1NameInput" style="width: 100;" placeholder="Enter name of Player 1"><br><input type="text" id="p2NameInput" style="width: 100;" placeholder="Enter name of Player 2"><br><button id="submitName">Confirm</button>');
+  NameInput.position(windowWidth / 2 - canvasSize / 2, middleAlign + canvasSize + 55);
+
+  document.getElementById('submitName').addEventListener('click', function () {
+    if (document.getElementById('p1NameInput').value !== "") {
+      window.localStorage.p1Name = document.getElementById('p1NameInput').value;
+    }
+    if (document.getElementById('p2NameInput').value !== "") {
+      window.localStorage.p2Name = document.getElementById('p2NameInput').value;
+    }
+  });
+
+
 }
 
 function gameOver() {
-  let winner = p1Score > p2Score ? "Player 1" : "Payer 2";
+  let winner = p1Score > p2Score ? p1Name : p2Name;
   background(20, 20, 20);
   textAlign(CENTER);
   text('Game Over! ' + winner + ' won!', width / 2, height / 2 - 20);
