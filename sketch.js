@@ -4,7 +4,7 @@ let canvasSize = 600;
 let canvasTopAlign = 100;
 let paddleSpeed = 10;
 let ballSpeed = 7;
-let winningScore = 1000;
+let winningScore = 2000;
 let paddleWidth = 40;
 let paddleHeight = 6;
 let runGame = false;
@@ -13,18 +13,22 @@ let paddle1;
 let paddle2;
 let p1Score = 0;
 let p2Score = 0;
-let p1Name = "Player 1";
-let p2Name = "Player 2";
+let p1Name;
+let p2Name;
 
 let topAlign = 20;
 let middleAlign = 120;
 
-if (window.localStorage.p1Name !== null) {
+if (window.localStorage.p1Name !== null || window.localStorage.p1Name === "") {
   p1Name = window.localStorage.p1Name;
+} else { 
+  p1Name = "Player 1";
 }
 
-if (window.localStorage.p2Name !== null) {
+if (window.localStorage.p2Name !== null || window.localStorage.p2Name === "") {
   p2Name = window.localStorage.p2Name;
+} else { 
+  p2Name = "Player 2";
 }
 
 function setup() {
